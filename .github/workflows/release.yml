@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write # needed to create the release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history for changelog
+
+      - name: Generate Release Notes
+        run: |
+          # simple release notes: tag + CHANGELOG section
+          awk '/^## \[${{ github.ref_name }}\]/{flag=1;next}/^## \[/{flag=0}flag' CHANGELOG.md \
+            > RELEASE_NOTES.md || true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
