@@ -5,11 +5,17 @@ A fast, lightweight XML Schema validation library written in pure Go. No CGO or 
 ## Features
 
 ✅ **Pure Go** - No CGO or external C library dependencies
+
 ✅ **XSD Parsing** - Parse XML Schema Definition files into Go structs
+
 ✅ **XML Validation** - Validate XML documents against XSD schemas
+
 ✅ **Comprehensive Validation** - Pattern, length, range, enumeration, and occurrence constraints
+
 ✅ **Built-in Types** - Support for xs:string, xs:integer, xs:decimal, xs:boolean, xs:date, etc.
+
 ✅ **Fast Performance** - Optimized with internal lookup maps for efficient validation
+
 ✅ **Detailed Errors** - Clear, actionable validation error messages
 
 ## Installation
