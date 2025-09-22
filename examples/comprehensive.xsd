@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.com/library"
+           xmlns:lib="http://example.com/library"
+           elementFormDefault="qualified">
+
+    <!-- Root element -->
+    <xs:element name="library">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="metadata" type="lib:metadataType"/>
+                <xs:element name="books" type="lib:booksType"/>
+                <xs:element name="members" type="lib:membersType"/>
+            </xs:sequence>
+            <xs:attribute name="version" type="xs:string" use="required"/>
+            <xs:attribute name="established" type="xs:date"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Metadata type -->
+    <xs:complexType name="metadataType">
+        <xs:sequence>
+            <xs:element name="name" type="lib:libraryNameType"/>
+            <xs:element name="location" type="xs:string"/>
+            <xs:element name="capacity" type="lib:positiveIntType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Books container -->
+    <xs:complexType name="booksType">
+        <xs:sequence>
+            <xs:element name="book" type="lib:bookType" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Book type with various validation rules -->
+    <xs:complexType name="bookType">
+        <xs:sequence>
+            <xs:element name="title" type="lib:titleType"/>
+            <xs:element name="author" type="lib:authorType" maxOccurs="5"/>
+            <xs:element name="isbn" type="lib:isbnType"/>
+            <xs:element name="publishedDate" type="xs:date"/>
+            <xs:element name="price" type="lib:priceType"/>
+            <xs:element name="category" type="lib:categoryType"/>
+            <xs:element name="rating" type="lib:ratingType" minOccurs="0"/>
+            <xs:element name="description" type="lib:descriptionType" minOccurs="0"/>
+            <xs:element name="available" type="xs:boolean"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="lib:bookIdType" use="required"/>
+        <xs:attribute name="language" type="lib:languageType" default="en"/>
+    </xs:complexType>
+
+    <!-- Members container -->
+    <xs:complexType name="membersType">
+        <xs:sequence>
+            <xs:element name="member" type="lib:memberType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Member type -->
+    <xs:complexType name="memberType">
+        <xs:sequence>
+            <xs:element name="name" type="lib:personNameType"/>
+            <xs:element name="email" type="lib:emailType"/>
+            <xs:element name="membershipId" type="lib:membershipIdType"/>
+            <xs:element name="joinDate" type="xs:date"/>
+            <xs:element name="status" type="lib:memberStatusType"/>
+            <xs:element name="borrowedBooks" type="lib:borrowedBooksType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="premium" type="xs:boolean" default="false"/>
+    </xs:complexType>
+
+    <!-- Borrowed books -->
+    <xs:complexType name="borrowedBooksType">
+        <xs:sequence>
+            <xs:element name="bookId" type="lib:bookIdType" maxOccurs="10"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Simple types with various facets -->
+
+    <!-- Library name with length constraints -->
+    <xs:simpleType name="libraryNameType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="5"/>
+            <xs:maxLength value="100"/>
+            <xs:pattern value="[A-Za-z\s]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Positive integer -->
+    <xs:simpleType name="positiveIntType">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="999999"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Book title -->
+    <xs:simpleType name="titleType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="200"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Author name -->
+    <xs:simpleType name="authorType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="2"/>
+            <xs:maxLength value="100"/>
+            <xs:pattern value="[A-Za-z\.\s\-']+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- ISBN pattern validation -->
+    <xs:simpleType name="isbnType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(97[89])?\d{9}[\dX]"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Price with decimal constraints -->
+    <xs:simpleType name="priceType">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.00"/>
+            <xs:maxInclusive value="999.99"/>
+            <xs:fractionDigits value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Category enumeration -->
+    <xs:simpleType name="categoryType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="fiction"/>
+            <xs:enumeration value="non-fiction"/>
+            <xs:enumeration value="science"/>
+            <xs:enumeration value="history"/>
+            <xs:enumeration value="biography"/>
+            <xs:enumeration value="children"/>
+            <xs:enumeration value="reference"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Rating from 1 to 5 -->
+    <xs:simpleType name="ratingType">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Description with length limit -->
+    <xs:simpleType name="descriptionType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="1000"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Book ID pattern -->
+    <xs:simpleType name="bookIdType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="BK\d{6}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Language code -->
+    <xs:simpleType name="languageType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="en"/>
+            <xs:enumeration value="es"/>
+            <xs:enumeration value="fr"/>
+            <xs:enumeration value="de"/>
+            <xs:enumeration value="it"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Person name -->
+    <xs:simpleType name="personNameType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="2"/>
+            <xs:maxLength value="50"/>
+            <xs:pattern value="[A-Za-z\s\-'\.]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Email validation -->
+    <xs:simpleType name="emailType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Membership ID -->
+    <xs:simpleType name="membershipIdType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="M\d{8}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Member status -->
+    <xs:simpleType name="memberStatusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="active"/>
+            <xs:enumeration value="inactive"/>
+            <xs:enumeration value="suspended"/>
+            <xs:enumeration value="expired"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

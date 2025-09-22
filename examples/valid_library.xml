@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lib:library xmlns:lib="http://example.com/library"
+             version="1.0"
+             established="2020-01-15">
+
+    <lib:metadata>
+        <lib:name>Central Public Library</lib:name>
+        <lib:location>123 Main Street, Downtown</lib:location>
+        <lib:capacity>50000</lib:capacity>
+    </lib:metadata>
+
+    <lib:books>
+        <lib:book id="BK000001" language="en">
+            <lib:title>The Great Gatsby</lib:title>
+            <lib:author>F. Scott Fitzgerald</lib:author>
+            <lib:isbn>9780743273565</lib:isbn>
+            <lib:publishedDate>1925-04-10</lib:publishedDate>
+            <lib:price>12.99</lib:price>
+            <lib:category>fiction</lib:category>
+            <lib:rating>4</lib:rating>
+            <lib:description>A classic American novel about the Jazz Age and the American Dream.</lib:description>
+            <lib:available>true</lib:available>
+        </lib:book>
+
+        <lib:book id="BK000002" language="es">
+            <lib:title>Cien años de soledad</lib:title>
+            <lib:author>Gabriel García Márquez</lib:author>
+            <lib:isbn>9780060883287</lib:isbn>
+            <lib:publishedDate>1967-05-30</lib:publishedDate>
+            <lib:price>15.50</lib:price>
+            <lib:category>fiction</lib:category>
+            <lib:rating>5</lib:rating>
+            <lib:available>true</lib:available>
+        </lib:book>
+
+        <lib:book id="BK000003">
+            <lib:title>A Brief History of Time</lib:title>
+            <lib:author>Stephen Hawking</lib:author>
+            <lib:isbn>9780553380163</lib:isbn>
+            <lib:publishedDate>1988-04-01</lib:publishedDate>
+            <lib:price>18.99</lib:price>
+            <lib:category>science</lib:category>
+            <lib:available>false</lib:available>
+        </lib:book>
+
+        <lib:book id="BK000004">
+            <lib:title>The Art of Computer Programming</lib:title>
+            <lib:author>Donald E. Knuth</lib:author>
+            <lib:author>Various Contributors</lib:author>
+            <lib:isbn>9780201896848</lib:isbn>
+            <lib:publishedDate>1968-07-01</lib:publishedDate>
+            <lib:price>89.95</lib:price>
+            <lib:category>reference</lib:category>
+            <lib:rating>5</lib:rating>
+            <lib:description>Comprehensive multi-volume work on computer algorithms and programming techniques.</lib:description>
+            <lib:available>true</lib:available>
+        </lib:book>
+    </lib:books>
+
+    <lib:members>
+        <lib:member premium="true">
+            <lib:name>John Smith</lib:name>
+            <lib:email>john.smith@email.com</lib:email>
+            <lib:membershipId>M12345678</lib:membershipId>
+            <lib:joinDate>2021-03-15</lib:joinDate>
+            <lib:status>active</lib:status>
+            <lib:borrowedBooks>
+                <lib:bookId>BK000001</lib:bookId>
+                <lib:bookId>BK000003</lib:bookId>
+            </lib:borrowedBooks>
+        </lib:member>
+
+        <lib:member>
+            <lib:name>Mary Johnson</lib:name>
+            <lib:email>mary.johnson@example.org</lib:email>
+            <lib:membershipId>M87654321</lib:membershipId>
+            <lib:joinDate>2022-01-10</lib:joinDate>
+            <lib:status>active</lib:status>
+        </lib:member>
+
+        <lib:member premium="false">
+            <lib:name>David Wilson</lib:name>
+            <lib:email>d.wilson@company.com</lib:email>
+            <lib:membershipId>M11223344</lib:membershipId>
+            <lib:joinDate>2020-08-22</lib:joinDate>
+            <lib:status>suspended</lib:status>
+            <lib:borrowedBooks>
+                <lib:bookId>BK000002</lib:bookId>
+            </lib:borrowedBooks>
+        </lib:member>
+    </lib:members>
+</lib:library>
