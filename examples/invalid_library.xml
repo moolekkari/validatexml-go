@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lib:library xmlns:lib="http://example.com/library"
+             version="1.0">
+
+    <lib:metadata>
+        <lib:name>ABC</lib:name> <!-- Too short, violates minLength=5 -->
+        <lib:location>123 Main Street, Downtown</lib:location>
+        <lib:capacity>0</lib:capacity> <!-- Violates minInclusive=1 -->
+    </lib:metadata>
+
+    <lib:books>
+        <lib:book id="INVALID" language="zh"> <!-- Invalid ID pattern and unsupported language -->
+            <lib:title></lib:title> <!-- Empty title violates minLength=1 -->
+            <lib:author>F. Scott Fitzgerald</lib:author>
+            <lib:isbn>1234567890</lib:isbn> <!-- Invalid ISBN pattern -->
+            <lib:publishedDate>1925-04-10</lib:publishedDate>
+            <lib:price>1000.00</lib:price> <!-- Exceeds maxInclusive=999.99 -->
+            <lib:category>romance</lib:category> <!-- Not in enumeration -->
+            <lib:rating>6</lib:rating> <!-- Exceeds maxInclusive=5 -->
+            <lib:available>true</lib:available>
+        </lib:book>
+
+        <!-- Missing required book element - violates minOccurs=1 on books -->
+    </lib:books>
+
+    <lib:members>
+        <lib:member premium="maybe"> <!-- Invalid boolean value -->
+            <lib:name>A</lib:name> <!-- Too short, violates minLength=2 -->
+            <lib:email>invalid-email</lib:email> <!-- Invalid email pattern -->
+            <lib:membershipId>123</lib:membershipId> <!-- Invalid pattern -->
+            <lib:joinDate>2021-13-45</lib:joinDate> <!-- Invalid date -->
+            <lib:status>pending</lib:status> <!-- Not in enumeration -->
+            <lib:borrowedBooks>
+                <!-- Too many books - assuming maxOccurs=10 and we add 11 -->
+                <lib:bookId>BK000001</lib:bookId>
+                <lib:bookId>BK000002</lib:bookId>
+                <lib:bookId>BK000003</lib:bookId>
+                <lib:bookId>BK000004</lib:bookId>
+                <lib:bookId>BK000005</lib:bookId>
+                <lib:bookId>BK000006</lib:bookId>
+                <lib:bookId>BK000007</lib:bookId>
+                <lib:bookId>BK000008</lib:bookId>
+                <lib:bookId>BK000009</lib:bookId>
+                <lib:bookId>BK000010</lib:bookId>
+                <lib:bookId>BK000011</lib:bookId> <!-- This exceeds maxOccurs=10 -->
+            </lib:borrowedBooks>
+        </lib:member>
+    </lib:members>
+</lib:library>
