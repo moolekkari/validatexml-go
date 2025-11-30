@@ -47,7 +47,7 @@ func (s *Schema) validateNode(node *Node, def *Element) []string {
 	var errors []string
 
 	// Validate text content for leaf nodes
-	if len(node.Children) == 0 && strings.TrimSpace(node.Content) != "" {
+	if len(node.Children) == 0 {
 		errors = append(errors, s.validateTextContent(node, def)...)
 	}
 

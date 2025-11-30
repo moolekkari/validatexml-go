@@ -299,3 +299,74 @@ func TestMaxOccursValidation(t *testing.T) {
 		})
 	}
 }
+
+func TestEmptyElement(t *testing.T) {
+	xsdBytes := []byte(`
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="test">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+</xs:schema>`)
+
+	schema, err := ParseXSD(xsdBytes)
+	if err != nil {
+		t.Fatalf("Failed to parse XSD: %v", err)
+	}
+
+	tests := []struct {
+		name       string
+		xml        string
+		shouldPass bool
+		errorCheck func(error) bool
+	}{
+		{
+			name:       "Valid length",
+			xml:        `<test>Test</test>`,
+			shouldPass: true,
+		},
+		{
+			name:       "Too short",
+			xml:        `<test></test>`,
+			shouldPass: false,
+			errorCheck: func(err error) bool {
+				return strings.Contains(err.Error(), "too short")
+			},
+		},
+		{
+			name:       "Can't be empty",
+			xml:        `<test/>`,
+			shouldPass: false,
+			errorCheck: func(err error) bool {
+				return strings.Contains(err.Error(), "too short")
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			doc, err := Parse([]byte(tt.xml))
+			if err != nil {
+				t.Fatalf("Failed to parse XML: %v", err)
+			}
+
+			validationErr := schema.Validate(doc)
+			if tt.shouldPass {
+				if validationErr != nil {
+					t.Errorf("Expected validation to pass, but got error: %v", validationErr)
+				}
+			} else {
+				if validationErr == nil {
+					t.Error("Expected validation to fail, but it passed")
+				} else if tt.errorCheck != nil && !tt.errorCheck(validationErr) {
+					t.Errorf("Error check failed for: %v", validationErr)
+				} else {
+					t.Logf("✓ Length constraint validation working: %v", validationErr)
+				}
+			}
+		})
+	}
+}
