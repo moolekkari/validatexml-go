@@ -89,8 +89,14 @@ func (s *Schema) validateTextContent(node *Node, def *Element) []string {
 func (s *Schema) validateComplexType(node *Node, complexType *ComplexType) []string {
 	var errors []string
 
-	// Validate attributes
-	errors = append(errors, s.validateAttributes(node, complexType.Attributes)...)
+	// Handle simpleContent (text content + attributes from extension)
+	if complexType.SimpleContent != nil && complexType.SimpleContent.Extension != nil {
+		allAttrs := append(complexType.Attributes, complexType.SimpleContent.Extension.Attributes...)
+		errors = append(errors, s.validateAttributes(node, allAttrs)...)
+		errors = append(errors, s.validateSimpleContent(node, complexType.SimpleContent)...)
+	} else {
+		errors = append(errors, s.validateAttributes(node, complexType.Attributes)...)
+	}
 
 	// Validate content model
 	if complexType.Sequence != nil {
@@ -99,6 +105,33 @@ func (s *Schema) validateComplexType(node *Node, complexType *ComplexType) []str
 		errors = append(errors, s.validateChoice(node, complexType.Choice)...)
 	} else if complexType.All != nil {
 		errors = append(errors, s.validateAll(node, complexType.All)...)
+	}
+
+	return errors
+}
+
+// validateSimpleContent validates text content against the base type of a simpleContent extension.
+func (s *Schema) validateSimpleContent(node *Node, sc *SimpleContent) []string {
+	var errors []string
+
+	ext := sc.Extension
+	content := strings.TrimSpace(node.Content)
+	if content == "" {
+		return errors
+	}
+
+	// Check if base is a built-in type
+	if strings.HasPrefix(ext.Base, "xs:") {
+		if err := validateBuiltInType(content, ext.Base); err != nil {
+			errors = append(errors, fmt.Sprintf("in element <%s>: %s", node.Name.Local, err.Error()))
+		}
+	}
+
+	// Check if base is a named simple type
+	if simpleType, exists := s.SimpleTypeMap[ext.Base]; exists {
+		for _, validationErr := range validateSimpleTypeConstraints(content, simpleType) {
+			errors = append(errors, fmt.Sprintf("in element <%s>: %s", node.Name.Local, validationErr))
+		}
 	}
 
 	return errors
@@ -166,6 +199,9 @@ func validateSimpleTypeConstraints(content string, simpleType *SimpleType) []str
 	// Numeric range validation
 	errors = append(errors, validateNumericConstraints(content, restriction)...)
 
+	// Digit constraints
+	errors = append(errors, validateDigitConstraints(content, restriction)...)
+
 	return errors
 }
 
@@ -191,6 +227,10 @@ func (s *Schema) findSimpleType(def *Element) (*SimpleType, error) {
 		}
 		if strings.HasPrefix(def.Type, "xs:") {
 			return nil, nil // Built-in type, no additional constraints
+		}
+		// Don't error if the type is a known complex type (e.g., one with simpleContent)
+		if _, exists := s.ComplexTypeMap[def.Type]; exists {
+			return nil, nil
 		}
 		return nil, fmt.Errorf("type definition '%s' not found in schema", def.Type)
 	}
