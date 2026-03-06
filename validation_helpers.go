@@ -140,6 +140,54 @@ func parseNumericValues(content, limitValue, baseType string) (contentNum, limit
 	}
 }
 
+// validateDigitConstraints checks totalDigits and fractionDigits constraints.
+func validateDigitConstraints(content string, restriction *Restriction) []string {
+	var errors []string
+
+	if restriction.TotalDigits != nil && restriction.TotalDigits.Value != "" {
+		if maxDigits, err := strconv.Atoi(restriction.TotalDigits.Value); err != nil {
+			errors = append(errors, fmt.Sprintf("invalid totalDigits value in schema: %s", restriction.TotalDigits.Value))
+		} else {
+			digitCount := countDigits(content)
+			if digitCount > maxDigits {
+				errors = append(errors, fmt.Sprintf("value '%s' has %d digits, but totalDigits is %d",
+					content, digitCount, maxDigits))
+			}
+		}
+	}
+
+	if restriction.FractionDigits != nil && restriction.FractionDigits.Value != "" {
+		if maxFrac, err := strconv.Atoi(restriction.FractionDigits.Value); err != nil {
+			errors = append(errors, fmt.Sprintf("invalid fractionDigits value in schema: %s", restriction.FractionDigits.Value))
+		} else {
+			fracPart := content
+			if idx := strings.IndexByte(content, '.'); idx >= 0 {
+				fracPart = content[idx+1:]
+			} else {
+				fracPart = ""
+			}
+			fracCount := countDigits(fracPart)
+			if fracCount > maxFrac {
+				errors = append(errors, fmt.Sprintf("value '%s' has %d fraction digits, but fractionDigits is %d",
+					content, fracCount, maxFrac))
+			}
+		}
+	}
+
+	return errors
+}
+
+// countDigits counts the number of digit characters in a string.
+func countDigits(s string) int {
+	count := 0
+	for _, c := range s {
+		if c >= '0' && c <= '9' {
+			count++
+		}
+	}
+	return count
+}
+
 // validateBuiltInType validates content against XML Schema built-in types.
 func validateBuiltInType(content, typeName string) error {
 	content = strings.TrimSpace(content)

@@ -47,11 +47,25 @@ type Element struct {
 // ComplexType represents an XSD complex type definition.
 // Complex types define elements that can contain other elements or attributes.
 type ComplexType struct {
-	Name       string      `xml:"name,attr"`
-	Sequence   *Sequence   `xml:"sequence"`  // Ordered sequence of child elements
-	Choice     *Choice     `xml:"choice"`    // Choice between alternative elements
-	All        *All        `xml:"all"`       // Unordered group of elements
-	Attributes []Attribute `xml:"attribute"` // Element attributes
+	Name          string         `xml:"name,attr"`
+	Sequence      *Sequence      `xml:"sequence"`      // Ordered sequence of child elements
+	Choice        *Choice        `xml:"choice"`         // Choice between alternative elements
+	All           *All           `xml:"all"`            // Unordered group of elements
+	SimpleContent *SimpleContent `xml:"simpleContent"`  // Text content with attributes
+	Attributes    []Attribute    `xml:"attribute"`      // Element attributes
+}
+
+// SimpleContent represents an XSD simpleContent element.
+// It defines a complex type that has text content (from a simple type base) plus optional attributes.
+type SimpleContent struct {
+	Extension *Extension `xml:"extension"`
+}
+
+// Extension represents an XSD extension element within simpleContent.
+// It extends a base simple type with additional attributes.
+type Extension struct {
+	Base       string      `xml:"base,attr"`
+	Attributes []Attribute `xml:"attribute"`
 }
 
 // Sequence represents an ordered sequence of elements in a complex type.
@@ -94,8 +108,10 @@ type Restriction struct {
 	Pattern   *Facet `xml:"pattern"`
 
 	// Numeric constraints
-	MinInclusive *Facet `xml:"minInclusive"`
-	MaxInclusive *Facet `xml:"maxInclusive"`
+	MinInclusive   *Facet `xml:"minInclusive"`
+	MaxInclusive   *Facet `xml:"maxInclusive"`
+	TotalDigits    *Facet `xml:"totalDigits"`
+	FractionDigits *Facet `xml:"fractionDigits"`
 
 	// Enumeration constraints
 	Enumeration []*Facet `xml:"enumeration"`
